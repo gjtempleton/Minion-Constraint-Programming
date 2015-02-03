@@ -1,0 +1,5 @@
+language ESSENCE' 1.0
+letting dMin be 1
+letting dMax be 9
+letting d be 3
+letting s be 6

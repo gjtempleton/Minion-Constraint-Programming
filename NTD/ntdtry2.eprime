@@ -1,0 +1,17 @@
+language ESSENCE' 1.0
+
+given dMin : int
+given dMax : int
+given d : int
+given s : int
+find dice : matrix indexed by [int(1..d), int(1..s)] of int(dMin..dMax)
+find rollMatrix : matrix indexed by [int(0..d-1), int(0..s-1), int(0..s-1)] of int(0..1)
+
+such that
+  $Wins matrix filled
+  forAll x : int(0..d-1).
+	forAll r1,r2 : int(0..s-1).
+		rollMatrix[x,r1,r2] = (dice[1+(x % d), r1] > dice[1+((x + 1) % d), r2]),
+   $Check on win percentage
+  forAll x : int(0..d-1).
+    (sum r1,r2 : int(0..s-1). rollMatrix[x, r1,r2]) > ((s*s)/2)
