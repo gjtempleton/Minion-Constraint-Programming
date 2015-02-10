@@ -19,9 +19,8 @@ such that
   $forAll x : int(1..numDice).
   $  allDiff(dice[x, ..]),
 
-  forAll x : int(1..numDice).
-    forAll y : int(1..sides).
-      allDiff(dice[x, ..]),
+  $ Numbers across all die must be unique
+  $ allDiff([ dice[k,l] | k : int(1..numDice), l : int(1..sides)]),
 
   $ Order the numbers on each die to make use of symmetry breaking, cuts down on memory use massively
   forAll x : int(1..numDice).
@@ -51,8 +50,8 @@ such that
    
   $ Check on wins being better than losses - previous check based on higher than half of rolls didn't account for draws
   forAll x : int(0..numDice-1).
-    rollMatrix[x, 0] > rollMatrix[x, 1],
+    rollMatrix[x, 0] > rollMatrix[x, 1]
 
   $ Ensure probability matches for all die within solution
-  forAll x : int(0..numDice-1).
-    rollMatrix[((x+1)%numDice),0] = rollMatrix[x,0]
+  $ forAll x : int(0..numDice-1).
+  $  rollMatrix[((x+1)%numDice),0] = rollMatrix[x,0]

@@ -1,5 +1,5 @@
 language ESSENCE' 1.0
 letting dieMin be 1
-letting dieMax be 18
+letting dieMax be 72
 letting numDice be 3
 letting sides be 6
