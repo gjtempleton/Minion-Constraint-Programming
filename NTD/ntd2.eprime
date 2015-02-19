@@ -32,7 +32,7 @@ such that
   forAll x : int(1..numDice).
     forAll y : int(1..numDice).
       (x!=y) ->
-        (sum z : int(1..sides). (dice[x,z] != dice[y,z])) < sides,
+        (sum z : int(1..sides). (dice[x,z] = dice[y,z])) < sides,
 
   $ Wins matrix filled, use mods to allow for overflow of last dice to first dice
   $ Adds one to the sum for each roll where the value in the matrix for the current die's side "thisDie" is higher
