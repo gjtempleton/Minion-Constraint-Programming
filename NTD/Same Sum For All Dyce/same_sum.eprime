@@ -1,0 +1,65 @@
+language ESSENCE' 1.0
+
+given dieMin : int
+given dieMax : int
+given numDice : int
+given sides : int
+
+letting ROLLS be domain int(1..sides*sides)
+
+$ Find the matrix of dice sides
+find dice : matrix indexed by [int(1..numDice), int(1..sides)] of int(dieMin..dieMax)
+
+$ Find the matrix of results from rolls, dx2, the two for how many times a dice wins and loses rolling against the next one
+find rollMatrix : matrix indexed by [int(0..numDice-1), int(0..1)] of ROLLS
+
+such that   
+  
+  $ Dice must all be different (no duplicate numbers on each die)
+  $forAll x : int(1..numDice).
+  $  allDiff(dice[x, ..]),
+
+  $ Numbers across all die must be unique
+  $ allDiff([ dice[k,l] | k : int(1..numDice), l : int(1..sides)]),
+
+
+  $ Check that the sum of all dice sides is is the same for every dice.
+  forAll x : int(1..numDice).
+    forAll y : int(1..numDice).
+      (x!=y) ->
+        (sum(dice[x,..])=sum(dice[y,..])),
+
+
+  $ Order the numbers on each die to make use of symmetry breaking, cuts down on memory use massively
+  forAll x : int(1..numDice).
+    (forAll i : int(2..sides).
+      dice[x,i-1] <= dice[x,i]),
+    
+  $ Check all dice are different by checking that sum of sides the same on each dice is less than
+  $ The number of sides on each dice for each dice comparison
+  forAll x : int(1..numDice).
+    forAll y : int(1..numDice).
+      (x!=y) ->
+        (sum z : int(1..sides). (dice[x,z] = dice[y,z])) < sides,
+
+  $ Wins matrix filled, use mods to allow for overflow of last dice to first dice
+  $ Adds one to the sum for each roll where the value in the matrix for the current die's side "thisDie" is higher
+  $ Than that for the next die in the chain "nextDie"
+  forAll x : int(0..numDice-1).
+    (rollMatrix[x,0] =
+      ((sum thisDie,nextDie : int(1..sides). (dice[1+(x % numDice), thisDie] > dice[1+((x + 1) % numDice), nextDie]))
+    )),
+  
+  $ Losses filled - draws add 1 to both wins and losses to allow for calculation of win percentage without factorial
+  forAll x : int(0..numDice-1).
+    (rollMatrix[x,1] =
+        ((sum thisDie,nextDie : int(1..sides). (dice[1+(x % numDice), thisDie] < dice[1+((x + 1) % numDice), nextDie]))
+    )),
+   
+  $ Check on wins being better than losses - previous check based on higher than half of rolls didn't account for draws
+  forAll x : int(0..numDice-1).
+    rollMatrix[x, 0] > rollMatrix[x, 1]
+
+  $ Ensure probability matches for all die within solution
+  $ forAll x : int(0..numDice-1).
+  $  rollMatrix[((x+1)%numDice),0] = rollMatrix[x,0]
