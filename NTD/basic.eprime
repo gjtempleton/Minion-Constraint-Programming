@@ -1,0 +1,28 @@
+language ESSENCE' 1.0
+
+given dieMin : int
+given dieMax : int
+given numDice : int
+given sides : int
+
+$ Find the matrix of dice sides
+find dice : matrix indexed by [int(0..numDice-1), int(1..sides)] of int(dieMin..dieMax)
+
+$ Find the matrix of results from rolls
+$ Two columns for how many times a dice a) wins and b) loses rolling against the next one
+find rollMatrix : matrix indexed by [int(0..numDice-1), int(0..1)] of int(1..sides*sides)
+
+such that   
+  $ Wins matrix filled - use mods to allow for overflow of last dice to first dice
+  $ Adds one to the sum for each roll where the value in the matrix for the current die's side "thisDie" is higher
+  $ Than that for the next die in the chain "nextDie"
+  forAll x : int(0..numDice-1).
+    (rollMatrix[x,0] = ((sum thisDie, nextDie : int(1..sides). (dice[(x % numDice), thisDie] > dice[((x + 1) % numDice), nextDie])))),
+  
+  $ Losses filled - draws add 1 to both wins and losses to allow for calculation of win percentage without factorial
+  forAll x : int(0..numDice-1).
+    (rollMatrix[x,1] = ((sum thisDie, nextDie : int(1..sides). (dice[(x % numDice), thisDie] < dice[((x + 1) % numDice), nextDie])))),
+   
+  $ Check on wins being better than losses - previous check based on higher than half of rolls didn't account for draws
+  forAll x : int(0..numDice-1).
+    rollMatrix[x, 0] > rollMatrix[x, 1]
